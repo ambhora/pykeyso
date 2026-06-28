@@ -1,0 +1,15 @@
+# ------------------------------------------------------------------------------
+# SPDX-License-Identifier: Apache-2.0
+# ------------------------------------------------------------------------------
+
+[run]
+branch = true
+source = src/keyso
+
+[report]
+show_missing = true
+skip_covered = true
+exclude_lines =
+    pragma: no cover
+    if typing.TYPE_CHECKING:
+    if __name__ == .__main__.:
