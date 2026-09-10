@@ -64,6 +64,27 @@ class Nested:
 
 
 @dataclasses.dataclass(frozen=True, slots=True)
+class Interval:
+    """Construct a value-position ``_interval`` dictionary.
+
+    ``stop`` is inclusive.  ``step`` must be a positive integer.
+    """
+
+    start: int
+    stop: int
+    step: int = 1
+
+    def to_dictionary(self) -> Dictionary:
+        return {
+            constants.KEYWORD_INTERVAL: {
+                "start": self.start,
+                "stop": self.stop,
+                "step": self.step,
+            }
+        }
+
+
+@dataclasses.dataclass(frozen=True, slots=True)
 class Set:
     """Construct an ``_set`` dictionary from concrete configurations."""
 
@@ -143,6 +164,12 @@ def nested(value: Constructable) -> Dictionary:
     return Nested(value).to_dictionary()
 
 
+def interval(start: int, stop: int, step: int = 1) -> Dictionary:
+    """Return an inclusive integer ``_interval`` dictionary."""
+
+    return Interval(start, stop, step).to_dictionary()
+
+
 def set_(*configurations: Dictionary) -> Dictionary:
     """Return an ``_set`` dictionary."""
 
@@ -192,6 +219,7 @@ __all__ = [
     "DictionaryConstructor",
     "Difference",
     "Intersection",
+    "Interval",
     "Literal",
     "Nested",
     "Product",
@@ -199,6 +227,7 @@ __all__ = [
     "set_",
     "difference",
     "evaluate",
+    "interval",
     "intersection",
     "literal",
     "nested",

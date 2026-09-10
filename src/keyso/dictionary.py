@@ -193,7 +193,7 @@ def _expand_value_dictionary(dictionary: dict[object, object]) -> tuple[object, 
     if len(dictionary) != 1:
         raise DictionaryError(
             "Plain dictionaries are ambiguous in value position. "
-            "Use {'_literal': ...} for data or {'_nested': ...} for nested keyso."
+            "Use '_literal', '_nested', or '_interval' to disambiguate the value."
         )
 
     key, value = next(iter(dictionary.items()))
@@ -206,11 +206,47 @@ def _expand_value_dictionary(dictionary: dict[object, object]) -> tuple[object, 
             configuration.to_dict()
             for configuration in from_dictionary(typing.cast(Dictionary, value))
         )
+    if key == constants.KEYWORD_INTERVAL:
+        return _expand_interval(value)
 
     raise DictionaryError(
         "Plain dictionaries are ambiguous in value position. "
-        "Use {'_literal': ...} for data or {'_nested': ...} for nested keyso."
+        "Use '_literal', '_nested', or '_interval' to disambiguate the value."
     )
+
+
+def _expand_interval(value: object) -> tuple[object, ...]:
+    if not isinstance(value, dict):
+        raise DictionaryError("'_interval' must map to a dictionary")
+
+    required = {"start", "stop"}
+    allowed = required | {"step"}
+    actual = set(value.keys())
+    if not required.issubset(actual) or not actual.issubset(allowed):
+        raise DictionaryError(
+            "'_interval' must contain 'start' and 'stop', with optional 'step'"
+        )
+
+    start = value["start"]
+    stop = value["stop"]
+    step = value.get("step", 1)
+
+    for name, item in (("start", start), ("stop", stop), ("step", step)):
+        if isinstance(item, bool) or not isinstance(item, int):
+            raise DictionaryError(f"'_interval.{name}' must be an integer")
+
+    start = typing.cast(int, start)
+    stop = typing.cast(int, stop)
+    step = typing.cast(int, step)
+
+    if step <= 0:
+        raise DictionaryError("'_interval.step' must be greater than zero")
+    if start > stop:
+        raise DictionaryError(
+            "'_interval.start' must be less than or equal to '_interval.stop'"
+        )
+
+    return tuple(range(start, stop + 1, step))
 
 
 def _unwrap_concrete_value(value: object) -> object:

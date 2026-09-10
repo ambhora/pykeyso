@@ -17,6 +17,41 @@ dependencies = []
 Source = "https://gitlab.com/ambhora/software/keyso"
 
 # ------------------------------------------------------------------------------
+# Dependency groups
+# ------------------------------------------------------------------------------
+[dependency-groups]
+test = [
+  "pytest>=6.3",
+  "pytest-cov",
+]
+
+mypy = [
+  "mypy",
+  "pytest",
+]
+
+docs = [
+  "mkdocs-material",
+  "mkdocstrings[python]",
+  "mkdocs-awesome-nav",
+  "mkdocs-add-number-plugin",
+  "gitpython",
+  "pyyaml",
+  "pymdown-extensions",
+  "mkdocs-gen-files",
+  "mkdocs-awesome-pages-plugin",
+  "mkdocs-macros-plugin",
+  "mkdocs-pagetree-plugin",
+  "mkdocs-git-authors-plugin",
+  "mkdocs-git-revision-date-localized-plugin",
+]
+
+format = [
+  "black",
+  "docformatter",
+]
+
+# ------------------------------------------------------------------------------
 # Hatch configuration
 # ------------------------------------------------------------------------------
 [tool.hatch.version]
@@ -38,49 +73,8 @@ packages = ["src/keyso"]
 [tool.pytest.ini_options]
 pythonpath = ["src", "test/lib"]
 addopts = "--cov=keyso --cov-report term-missing --cov-fail-under=90 --cov-config=.coveragerc"
-
 testpaths = ["test"]
 
 [tool.black]
 line-length = 100
 
-[tool.hatch.envs.tests]
-dependencies = [
-  "pytest>=6.3",
-  "pytest-cov",
-]
-
-[tool.hatch.envs.tests.env-vars]
-PYTHONPATH = "src:test/lib"
-
-[tool.hatch.envs.tests.scripts]
-test = "pytest {args}"
-
-[tool.hatch.envs.mypy]
-dependencies = [
-  "mypy",
-  "pytest",
-]
-
-[tool.hatch.envs.docs]
-dependencies = [
-  "mkdocs-material",
-  "mkdocstrings[python]",
-  "mkdocs-awesome-nav",
-  "mkdocs-add-number-plugin",
-  "gitpython",
-  "pyyaml",
-  "pymdown-extensions",
-  "mkdocs-gen-files",
-  "mkdocs-awesome-pages-plugin",
-  "mkdocs-macros-plugin",
-  "mkdocs-pagetree-plugin",
-  "mkdocs-git-authors-plugin",
-  "mkdocs-git-revision-date-localized-plugin",
-]
-
-[tool.hatch.envs.format]
-dependencies = [
-  "black",
-  "docformatter",
-]
